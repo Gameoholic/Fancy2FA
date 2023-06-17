@@ -14,7 +14,7 @@ object MenuManager {
 
 
         fun handleMenuItemClick(player: Player, item: ItemStack, playerState: PlayerStateType, slot: Int) {
-                var itemName = PlainTextComponentSerializer.plainText().serialize(item.itemMeta.displayName()!!)
+                val itemName = PlainTextComponentSerializer.plainText().serialize(item.itemMeta.displayName()!!)
 
                 when (playerState) {
                         PlayerStateType.MAIN_MENU -> {
@@ -33,40 +33,43 @@ object MenuManager {
                         }
 
                         PlayerStateType.CREATE_QUESTION_MENU -> {
-                                if (itemName == "Create your own security question")
-                                        PromptManager.promptCreateCustomQuestion(player)
-                                else if (itemName == "Next page") {
-                                        val questionPage = Fancy2FA.instance?.playerState?.get(player.uniqueId)?.data!! as Int
-                                        displayCreateQuestionMenu(player, questionPage + 1)
-                                }
-                                else if (itemName == "Previous page") {
-                                        val questionPage = Fancy2FA.instance?.playerState?.get(player.uniqueId)?.data!! as Int
-                                        displayCreateQuestionMenu(player, questionPage - 1)
-                                }
-                                else if (itemName == "Go back") {
-                                        displayMainMenu(player)
-                                }
-                                else {
-                                        val doesSecurityQuestionExist: Boolean = (DBManager.runDBOperation(DBManager.doesSecurityQuestionExist(itemName, player.uniqueId), player) ?: return).result
-                                        if (doesSecurityQuestionExist) {
-                                                displayErrorMenu(player, "You've already created this security question, please pick another one.")
-                                                return
+                                when (itemName) {
+                                        "Create your own security question" -> PromptManager.promptCreateCustomQuestion(player)
+                                        "Next page" -> {
+                                                val questionPage = Fancy2FA.instance?.playerState?.get(player.uniqueId)?.data!! as Int
+                                                displayCreateQuestionMenu(player, questionPage + 1)
                                         }
-                                        PromptManager.promptQuestionAnswer(player, itemName)
+                                        "Previous page" -> {
+                                                val questionPage = Fancy2FA.instance?.playerState?.get(player.uniqueId)?.data!! as Int
+                                                displayCreateQuestionMenu(player, questionPage - 1)
+                                        }
+                                        "Go back" -> {
+                                                displayMainMenu(player)
+                                        }
+                                        else -> {
+                                                val doesSecurityQuestionExist: Boolean = (DBManager.runDBOperation(DBManager.doesSecurityQuestionExist(itemName, player.uniqueId), player) ?: return).result
+                                                if (doesSecurityQuestionExist) {
+                                                        displayErrorMenu(player, "You've already created this security question, please pick another one.")
+                                                        return
+                                                }
+                                                PromptManager.promptQuestionAnswer(player, itemName)
+                                        }
                                 }
                         }
 
                         PlayerStateType.QUESTION_DETAILS_MENU -> {
                                 val question = Fancy2FA.instance?.playerState?.get(player.uniqueId)?.data!!.toString()
-                                if (itemName == "Remove question") {
-                                        DBManager.removeSecurityQuestion(question, player.uniqueId)
-                                        displayMainMenu(player)
-                                }
-                                else if (itemName == "Update answer") {
-                                        PromptManager.promptQuestionUpdate(player, question)
-                                }
-                                else if (itemName == "Go back") {
-                                        displayMainMenu(player)
+                                when (itemName) {
+                                        "Remove question" -> {
+                                                DBManager.removeSecurityQuestion(question, player.uniqueId)
+                                                displayMainMenu(player)
+                                        }
+                                        "Update answer" -> {
+                                                PromptManager.promptQuestionUpdate(player, question)
+                                        }
+                                        "Go back" -> {
+                                                displayMainMenu(player)
+                                        }
                                 }
                         }
 
@@ -87,28 +90,29 @@ object MenuManager {
                         }
 
                         PlayerStateType.PASSWORD_MENU -> {
-                                if (itemName == "Go back")
-                                        displayMainMenu(player)
-                                else if (itemName == "Click to set a password.")
-                                        PromptManager.promptCreatePassword(player)
-                                else if (itemName == "Remove password") {
-                                        DBManager.removePassword(player.uniqueId)
-                                        displayMainMenu(player)
-                                }
-                                else if (itemName == "Update password") {
-                                        PromptManager.promptUpdatePassword(player)
+                                when (itemName) {
+                                        "Go back" -> displayMainMenu(player)
+                                        "Click to set a password." -> PromptManager.promptCreatePassword(player)
+                                        "Remove password" -> {
+                                                DBManager.removePassword(player.uniqueId)
+                                                displayMainMenu(player)
+                                        }
+                                        "Update password" -> {
+                                                PromptManager.promptUpdatePassword(player)
+                                        }
                                 }
                         }
 
                         PlayerStateType.DISCORD_MENU -> {
-                                if (itemName == "Go back")
-                                        displayMainMenu(player)
-                                else if (itemName == "Remove account") {
-                                        DBManager.removeDiscordAuth(player.uniqueId)
-                                        displayMainMenu(player)
-                                }
-                                else if (itemName == "Update account") {
-                                        PromptManager.promptDiscordAuthProcess(player)
+                                when (itemName) {
+                                        "Go back" -> displayMainMenu(player)
+                                        "Remove account" -> {
+                                                DBManager.removeDiscordAuth(player.uniqueId)
+                                                displayMainMenu(player)
+                                        }
+                                        "Update account" -> {
+                                                PromptManager.promptDiscordAuthProcess(player)
+                                        }
                                 }
                         }
 
@@ -167,17 +171,17 @@ object MenuManager {
         }
 
         fun createItem(item: ItemStack, name: Component, vararg lore: Component): ItemStack {
-                var meta = item.itemMeta;
+                val meta = item.itemMeta
                 meta.displayName(name)
 
-                var lores = lore.toMutableList()
+                val lores = lore.toMutableList()
                 meta.lore(lores)
 
                 item.itemMeta = meta
                 return item
         }
         fun createItem(item: ItemStack, name: Component, lore: MutableList<TextComponent>): ItemStack {
-                var meta = item.itemMeta;
+                val meta = item.itemMeta
                 meta.displayName(name)
                 meta.lore(lore)
                 item.itemMeta = meta

@@ -62,7 +62,6 @@ class Fancy2FA : JavaPlugin() {
 
                 com.github.gameoholic.fancy2fa.ktor.main()
 
-                //https://discord.com/api/oauth2/authorize?client_id=1113103030594830407&redirect_uri=https%3A%2F%2Flocalhost&response_type=code&scope=identify
         }
 
 
