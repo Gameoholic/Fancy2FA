@@ -1,0 +1,39 @@
+#----------------SQL DATABASE----------------
+SQLName: sys
+SQLPort: 3307
+SQLUsername: USERNAME
+SQLPassword: PASSWORD
+
+
+
+#----------------SECURITY----------------
+#The strength of the hash. Must be between 4 and 30. Default 10
+HashLogRounds: 10
+#Pepper must be sent to a random, secure string. For example: j@9MSDBdO@93LD(i
+DiscordPepper: SECURE_PEPPER
+#Pepper must be sent to a random, secure string, DIFFERENT than DiscordPepper. For example: j@9MSDBdO@93LD(i
+Pepper: SECURE_PEPPER
+
+
+
+#----------------GENERAL----------------
+#How many security questions to force upon users who choose to include security questions as a security measure (0-5)
+MinQuestions: 3
+#If player chooses security questions, how many to require them to enter upon authentication. Must be equal to or less than MinQuestions, and above 0.
+AnswerQuestions: 3
+#Users who you want to force 2FA upon (staff members, etc.). Will be forced to use at least one authentication method.
+ForceUsers:
+  - 86accd85-4244-4a9f-a201-b155273956e2
+
+AuthenticationIPCooldown: 30
+
+
+
+#----------------DISCORD AUTH----------------
+#Whether to allow discord authentication. If set to true, uncomment (remove the #) from the following lines.
+UseDiscordAuth: true
+#Whether to require forced users to authenticate themselves on Discord
+ForceDiscord: true
+DiscordClientID: CLIENT_ID
+DiscordClientSecret: CLIENT_SECRET
+DiscordWebserverPort: WEBSERVER_PORT

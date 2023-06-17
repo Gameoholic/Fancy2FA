@@ -1,0 +1,22 @@
+package com.github.gameoholic.fancy2fa.datatypes
+
+enum class PlayerStateType {
+        MAIN_MENU,
+        CREATE_QUESTION_MENU,
+        CREATE_CUSTOM_QUESTION_PROMPT,
+        ANSWER_QUESTION_PROMPT,
+        QUESTION_DETAILS_MENU,
+        UPDATE_QUESTION_PROMPT,
+        ERROR_MENU,
+        PASSWORD_MENU,
+        CREATE_PASSWORD_PROMPT,
+        UPDATE_PASSWORD_PROMPT,
+        DISCORD_MENU,
+        DISCORD_AUTH_PROMPT,
+        INFO_MENU,
+        AUTH_LOGIN_MENU,
+        VERIFICATION_PASSWORD_PROMPT,
+        VERIFICATION_DISCORD_PROMPT,
+        VERIFICATION_QUESTION_PROMPT
+
+}
