@@ -1,6 +1,6 @@
 # Fancy2FA
 
-This was a learning project of mine, which helped me learn how to work with MySQL, Kotlin, ktor and the Discord API without using an API wrapper.
+This was a learning project of mine, which helped me learn how to work with MySQL, Kotlin, NMS, ktor and the Discord API without using an API wrapper.
 Don't use this in production, as it wasn't tested for vulnerabilities and might have exploits.
 
 https://github.com/Gameoholic/Fancy2FA/assets/30177004/1ccd3e9b-e7dc-4e9d-b0c2-97a4a9733c0d
