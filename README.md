@@ -7,6 +7,9 @@ Don't use this in production, as it wasn't tested for vulnerabilities and might 
 # Features
 + Authenticate yourself via Discord, security questions or a password, all of which are hashed, salted and peppered, and stored in a MySQL database.
 
+https://github.com/Gameoholic/Fancy2FA/assets/30177004/0b8ba4cb-43ed-41be-bbab-cf2fef6e1022
+
+
 + Fancy UI menus
 
 ![image](https://github.com/Gameoholic/Fancy2FA/assets/30177004/74dd7cb9-acb3-4ff8-99af-03d5b3b74ea8)
