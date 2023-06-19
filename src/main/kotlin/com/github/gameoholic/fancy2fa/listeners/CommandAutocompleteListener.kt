@@ -10,7 +10,7 @@ object CommandAutocompleteListener : Listener {
 
         @EventHandler
         fun onPlayerTab(e: PlayerCommandSendEvent) {
-                if (Fancy2FA.instance?.unverifiedPlayers?.contains(e.player.uniqueId)!!)
+                if (Fancy2FA.unverifiedPlayers.contains(e.player.uniqueId))
                         e.commands.clear()
         }
 }

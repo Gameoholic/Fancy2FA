@@ -1,6 +1,8 @@
-package com.github.gameoholic.fancy2fa.managers
+package com.github.gameoholic.fancy2fa.utils
 
 import com.github.gameoholic.fancy2fa.datatypes.*
+import com.github.gameoholic.fancy2fa.managers.ConfigManager
+import com.github.gameoholic.fancy2fa.managers.MenuManager
 import org.bukkit.entity.Player
 import java.lang.IllegalArgumentException
 import java.sql.Connection
@@ -8,7 +10,7 @@ import java.sql.DriverManager
 import java.sql.ResultSet
 import java.util.*
 
-object DBManager {
+object DBUtil {
 
         private var username = ConfigManager.SQLUsername
         private var password = ConfigManager.SQLPassword
@@ -124,8 +126,8 @@ object DBManager {
         fun addSecurityQuestion(question: String, answer: String, playerUUID: UUID): InternalDBResult<Nothing?> {
                 if (answer == "")
                         return InternalDBResult.Error("The answer for the security question mustn't be empty.")
-                var salt = CredentialsManager.genSalt(ConfigManager.hashLogRounds)
-                var hash = CredentialsManager.hashString(answer, salt, ConfigManager.generalPepper)
+                var salt = CredentialsUtil.genSalt(ConfigManager.hashLogRounds)
+                var hash = CredentialsUtil.hashString(answer, salt, ConfigManager.generalPepper)
                 try {
                         val connection: Connection = DriverManager.getConnection(url, username, password)
 
@@ -157,8 +159,8 @@ object DBManager {
         fun updateSecurityQuestion(question: String, newAnswer: String, playerUUID: UUID): InternalDBResult<Nothing?> {
                 if (newAnswer == "")
                         return InternalDBResult.Error("The answer for the security question mustn't be empty.")
-                var salt = CredentialsManager.genSalt(ConfigManager.hashLogRounds)
-                var hash = CredentialsManager.hashString(newAnswer, salt, ConfigManager.generalPepper)
+                var salt = CredentialsUtil.genSalt(ConfigManager.hashLogRounds)
+                var hash = CredentialsUtil.hashString(newAnswer, salt, ConfigManager.generalPepper)
                 try {
                         val connection: Connection = DriverManager.getConnection(url, username, password)
                         val query = """
@@ -214,10 +216,10 @@ object DBManager {
          * @return Has no return value
          */
         fun setPassword(password: String, playerUUID: UUID): InternalDBResult<Nothing?> {
-                var salt = CredentialsManager.genSalt(ConfigManager.hashLogRounds)
-                var hash = CredentialsManager.hashString(password, salt, ConfigManager.generalPepper)
+                var salt = CredentialsUtil.genSalt(ConfigManager.hashLogRounds)
+                var hash = CredentialsUtil.hashString(password, salt, ConfigManager.generalPepper)
                 try {
-                        val connection: Connection = DriverManager.getConnection(url, username, DBManager.password)
+                        val connection: Connection = DriverManager.getConnection(url, username, DBUtil.password)
 
                         val query = """
                          UPDATE users
@@ -247,7 +249,7 @@ object DBManager {
         fun hasPassword(playerUUID: UUID): InternalDBResult<Boolean> {
                 var hasPassword = false
                 try {
-                        val connection: Connection = DriverManager.getConnection(url, username, DBManager.password)
+                        val connection: Connection = DriverManager.getConnection(url, username, password)
 
                         val query = """
                          SELECT * FROM users
@@ -303,7 +305,7 @@ object DBManager {
         fun isDiscordAuthed(playerUUID: UUID): InternalDBResult<Boolean> {
                 var isAuthed = false
                 try {
-                        val connection: Connection = DriverManager.getConnection(url, username, DBManager.password)
+                        val connection: Connection = DriverManager.getConnection(url, username, password)
 
                         val query = """
                          SELECT * FROM users
@@ -331,10 +333,10 @@ object DBManager {
          * @return Has no return value
          */
         fun setDiscordAuth(playerUUID: UUID, userID: String, username: String): InternalDBResult<Nothing?> {
-                var salt = CredentialsManager.genSalt(ConfigManager.hashLogRounds)
-                var hash = CredentialsManager.hashString(userID, salt, ConfigManager.discordPepper)
+                var salt = CredentialsUtil.genSalt(ConfigManager.hashLogRounds)
+                var hash = CredentialsUtil.hashString(userID, salt, ConfigManager.discordPepper)
                 try {
-                        val connection: Connection = DriverManager.getConnection(url, DBManager.username, DBManager.password)
+                        val connection: Connection = DriverManager.getConnection(url, DBUtil.username, password)
 
                         val query = """
                          UPDATE users

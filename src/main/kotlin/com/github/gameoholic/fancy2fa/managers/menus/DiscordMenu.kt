@@ -4,7 +4,7 @@ import com.github.gameoholic.fancy2fa.Fancy2FA
 import com.github.gameoholic.fancy2fa.datatypes.DiscordAuthData
 import com.github.gameoholic.fancy2fa.datatypes.PlayerState
 import com.github.gameoholic.fancy2fa.datatypes.PlayerStateType
-import com.github.gameoholic.fancy2fa.managers.DBManager
+import com.github.gameoholic.fancy2fa.utils.DBUtil
 import com.github.gameoholic.fancy2fa.managers.MenuManager
 import com.github.gameoholic.fancy2fa.managers.PromptManager
 import net.kyori.adventure.text.Component
@@ -15,24 +15,23 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import java.util.*
 
 object DiscordMenu {
 
 
         fun display(player: Player) {
-                val isDiscordAuthed: Boolean = (DBManager.runDBOperation(DBManager.isDiscordAuthed(player.uniqueId), player) ?: return).result
+                val isDiscordAuthed: Boolean = (DBUtil.runDBOperation(DBUtil.isDiscordAuthed(player.uniqueId), player) ?: return).result
 
                 if (isDiscordAuthed) {
-                        val discordAuthData: DiscordAuthData = (DBManager.runDBOperation(
-                                DBManager.getPlayerDiscordAuthData(player.uniqueId), player) ?: return).result ?: return
+                        val discordAuthData: DiscordAuthData = (DBUtil.runDBOperation(
+                                DBUtil.getPlayerDiscordAuthData(player.uniqueId), player) ?: return).result ?: return
                         val inv = Bukkit.createInventory(player, 9 * 3, Component.text("Discord authentication"))
                         addGoBackItem(inv)
                         addRemoveDiscordItem(inv)
                         addUpdateDiscordItem(inv)
                         addDiscordAuthItem(inv, discordAuthData.username)
                         player.openInventory(inv)
-                        Fancy2FA.instance?.playerState?.put(player.uniqueId, PlayerState(PlayerStateType.DISCORD_MENU, null, inv))
+                        Fancy2FA.playerStates[player.uniqueId] = PlayerState(PlayerStateType.DISCORD_MENU, null, inv)
                 }
                 else {
                         PromptManager.promptDiscordAuthProcess(player)

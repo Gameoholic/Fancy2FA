@@ -1,6 +1,6 @@
 package com.github.gameoholic.fancy2fa.managers.menus
 
-import com.github.gameoholic.fancy2fa.managers.DBManager
+import com.github.gameoholic.fancy2fa.utils.DBUtil
 import com.github.gameoholic.fancy2fa.managers.MenuManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -38,7 +38,7 @@ object PasswordMenu {
 
 
         fun display(player: Player): Inventory? {
-                val isPasswordSet: Boolean = (DBManager.runDBOperation(DBManager.hasPassword(player.uniqueId), player) ?: return null).result
+                val isPasswordSet: Boolean = (DBUtil.runDBOperation(DBUtil.hasPassword(player.uniqueId), player) ?: return null).result
 
                 if (!isPasswordSet) {
                         val inv = Bukkit.createInventory(player, 9 * 2, Component.text("Password creation"))

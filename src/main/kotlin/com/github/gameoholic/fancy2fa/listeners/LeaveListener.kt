@@ -9,9 +9,9 @@ object LeaveListener : Listener {
 
         @EventHandler
         fun onPlayerLeave(e: PlayerQuitEvent) {
-                Fancy2FA?.instance?.packetManager?.removePlayer(e.player)
-                Fancy2FA?.instance?.playerState?.remove(e.player.uniqueId)
-                Fancy2FA?.instance?.unverifiedPlayers?.remove(e.player.uniqueId)
+                Fancy2FA.packetManager.removePlayer(e.player)
+                Fancy2FA.playerStates?.remove(e.player.uniqueId)
+                Fancy2FA.unverifiedPlayers?.remove(e.player.uniqueId)
         }
 
 

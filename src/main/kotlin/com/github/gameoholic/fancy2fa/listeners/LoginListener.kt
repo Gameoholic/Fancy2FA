@@ -3,7 +3,7 @@ package com.github.gameoholic.fancy2fa.listeners
 import com.github.gameoholic.fancy2fa.Fancy2FA
 import com.github.gameoholic.fancy2fa.datatypes.*
 import com.github.gameoholic.fancy2fa.managers.ConfigManager
-import com.github.gameoholic.fancy2fa.managers.DBManager
+import com.github.gameoholic.fancy2fa.utils.DBUtil
 import com.github.gameoholic.fancy2fa.managers.MenuManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -16,13 +16,13 @@ object LoginListener : Listener {
 
         @EventHandler
         fun onPlayerJoin(e: PlayerJoinEvent) {
-                Fancy2FA?.instance?.packetManager?.injectPlayer(e.player)
+                Fancy2FA.packetManager.injectPlayer(e.player)
                 //todo: add support for unforced players
                 val isPlayerForced: Boolean = ConfigManager.forcedPlayers.contains(e.player.uniqueId)
                 if (!isPlayerForced) return
 
 
-                val hasSufficient2FAQuery: DBResult<Boolean>? = DBManager.runDBOperation(DBManager.hasSufficient2FA(e.player.uniqueId))
+                val hasSufficient2FAQuery: DBResult<Boolean>? = DBUtil.runDBOperation(DBUtil.hasSufficient2FA(e.player.uniqueId))
 
                 if (hasSufficient2FAQuery == null) {
                         //todo: log
@@ -40,19 +40,19 @@ object LoginListener : Listener {
                 }
 
                 val securityQuestions: MutableList<SecurityQuestion> =
-                        (DBManager.runDBOperation(DBManager.getPlayerSecurityQuestions(e.player.uniqueId)) ?: return).result
+                        (DBUtil.runDBOperation(DBUtil.getPlayerSecurityQuestions(e.player.uniqueId)) ?: return).result
                 val authData: PlayerPasswordData? =
-                        (DBManager.runDBOperation(DBManager.getPlayerPasswordData(e.player.uniqueId)) ?: return).result
+                        (DBUtil.runDBOperation(DBUtil.getPlayerPasswordData(e.player.uniqueId)) ?: return).result
                 val discordAuthData: DiscordAuthData? =
-                        (DBManager.runDBOperation(DBManager.getPlayerDiscordAuthData(e.player.uniqueId)) ?: return).result
+                        (DBUtil.runDBOperation(DBUtil.getPlayerDiscordAuthData(e.player.uniqueId)) ?: return).result
 
                 //Must run on main thread
-                Fancy2FA.instance!!.server.scheduler.runTask(Fancy2FA.instance!!, Runnable {
+                Fancy2FA.plugin.server.scheduler.runTask(Fancy2FA.plugin, Runnable {
                         val fullAuthData = Player2FALoginData(0, securityQuestions, authData, discordAuthData)
                         MenuManager.displayVerificationMenu(e.player, fullAuthData)
                 })
 
-                Fancy2FA.instance?.unverifiedPlayers?.put(e.player.uniqueId, e.player.location)
+                Fancy2FA.unverifiedPlayers.put(e.player.uniqueId, e.player.location)
 
 
 

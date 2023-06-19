@@ -4,8 +4,8 @@ import com.github.gameoholic.fancy2fa.Fancy2FA
 import com.github.gameoholic.fancy2fa.datatypes.DiscordAuthData
 import com.github.gameoholic.fancy2fa.datatypes.PlayerStateType
 import com.github.gameoholic.fancy2fa.managers.ConfigManager
-import com.github.gameoholic.fancy2fa.managers.CredentialsManager
-import com.github.gameoholic.fancy2fa.managers.DBManager
+import com.github.gameoholic.fancy2fa.utils.CredentialsUtil
+import com.github.gameoholic.fancy2fa.utils.DBUtil
 import com.github.gameoholic.fancy2fa.managers.MenuManager
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -86,7 +86,7 @@ object DiscordAutentication {
         }
 
         private suspend fun getUserData(accessToken: String, client: HttpClient, playerUUID: UUID){
-                Fancy2FA.instance?.discordAuthStates?.remove<Any, UUID>(playerUUID)
+                Fancy2FA.discordAuthStates.remove<Any, UUID>(playerUUID)
                 val response: HttpResponse = client.get("https://discordapp.com/api/users/@me") {
                         headers {
                                 append(HttpHeaders.Authorization, "Bearer $accessToken")
@@ -98,35 +98,35 @@ object DiscordAutentication {
                 val userID = json.get("id").toString()
                 val username = json.get("username").toString()
 
-                val verification: Boolean = Fancy2FA.instance?.playerState?.get(playerUUID)?.type!! == PlayerStateType.VERIFICATION_DISCORD_PROMPT
+                val verification: Boolean = Fancy2FA.playerStates[playerUUID]?.type!! == PlayerStateType.VERIFICATION_DISCORD_PROMPT
 
                 val player = Bukkit.getPlayer(playerUUID) ?: return
 
                 if (verification) {
-                        val discordData : DiscordAuthData? = (DBManager.runDBOperation(
-                                DBManager.getPlayerDiscordAuthData(playerUUID), player) ?: return).result
+                        val discordData : DiscordAuthData? = (DBUtil.runDBOperation(
+                                DBUtil.getPlayerDiscordAuthData(playerUUID), player) ?: return).result
                         if (discordData == null ||
-                                CredentialsManager.hashString(userID, discordData.idSalt, ConfigManager.discordPepper) != discordData.idHash) {
-                                Fancy2FA.instance!!.server.scheduler.runTask(Fancy2FA.instance!!, Runnable {
+                                CredentialsUtil.hashString(userID, discordData.idSalt, ConfigManager.discordPepper) != discordData.idHash) {
+                                Fancy2FA.plugin.server.scheduler.runTask(Fancy2FA.plugin, Runnable {
                                         MenuManager.displayErrorMenu(player, "Failed to verify your Discord account.")
                                 })
                                 return
                         }
-                        Fancy2FA.instance?.unverifiedPlayers?.remove(playerUUID)
+                        Fancy2FA.unverifiedPlayers.remove(playerUUID)
                         Bukkit.getPlayer(playerUUID)?.let {
-                                Fancy2FA.instance!!.server.scheduler.runTask(Fancy2FA.instance!!, Runnable {
+                                Fancy2FA.plugin.server.scheduler.runTask(Fancy2FA.plugin, Runnable {
                                         it.closeInventory()
                                 })
                         }
                         Bukkit.getPlayer(playerUUID)?.sendMessage(Component.text("Successfully authenticated!").color(NamedTextColor.GREEN))
-                        Fancy2FA.instance?.unverifiedPlayers?.remove(player.uniqueId)
-                        Fancy2FA.instance?.playerState!!.remove(playerUUID)
+                        Fancy2FA.unverifiedPlayers.remove(player.uniqueId)
+                        Fancy2FA.playerStates.remove(playerUUID)
                 }
                 else {
-                        DBManager.runDBOperation(DBManager.setDiscordAuth(playerUUID, userID, username), player)
+                        DBUtil.runDBOperation(DBUtil.setDiscordAuth(playerUUID, userID, username), player)
                         //Must run on main thread
                         Bukkit.getPlayer(playerUUID)?.let {
-                                Fancy2FA.instance!!.server.scheduler.runTask(Fancy2FA.instance!!, Runnable {
+                                Fancy2FA.plugin.server.scheduler.runTask(Fancy2FA.plugin, Runnable {
                                         MenuManager.displayMainMenu(it)
                                 })
                         }

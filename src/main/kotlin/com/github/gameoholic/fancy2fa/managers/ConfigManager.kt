@@ -23,31 +23,31 @@ object ConfigManager {
         var authenticationIPCooldown = 0
 
         fun loadConfig() {
-                Fancy2FA.instance?.config?.getStringList("ForceUsers")?.forEach { forcedUserUUID ->
+                Fancy2FA.plugin.config.getStringList("ForceUsers")?.forEach { forcedUserUUID ->
                         forcedPlayers.add(UUID.fromString(forcedUserUUID))
                 }
                 loadSecurityQuestions()
-                hashLogRounds = Fancy2FA.instance?.config?.getInt("HashLogRounds")!!
-                generalPepper = Fancy2FA.instance?.config?.getString("Pepper")!!
-                discordPepper = Fancy2FA.instance?.config?.getString("DiscordPepper")!!
-                questionsRequired = Fancy2FA.instance?.config?.getInt("MinQuestions")!!
-                answerQuestionsRequired = Fancy2FA.instance?.config?.getInt("AnswerQuestions")!!
+                hashLogRounds = Fancy2FA.plugin.config.getInt("HashLogRounds")!!
+                generalPepper = Fancy2FA.plugin.config.getString("Pepper")!!
+                discordPepper = Fancy2FA.plugin.config.getString("DiscordPepper")!!
+                questionsRequired = Fancy2FA.plugin.config.getInt("MinQuestions")!!
+                answerQuestionsRequired = Fancy2FA.plugin.config.getInt("AnswerQuestions")!!
 
-                authenticationIPCooldown = Fancy2FA.instance?.config?.getInt("AuthenticationIPCooldown")!!
+                authenticationIPCooldown = Fancy2FA.plugin.config.getInt("AuthenticationIPCooldown")!!
 
-                SQLPort = Fancy2FA.instance?.config?.getInt("SQLPort")!!
-                SQLName = Fancy2FA.instance?.config?.getString("SQLName")!!
-                SQLUsername = Fancy2FA.instance?.config?.getString("SQLUsername")!!
-                SQLPassword = Fancy2FA.instance?.config?.getString("SQLPassword")!!
+                SQLPort = Fancy2FA.plugin.config.getInt("SQLPort")!!
+                SQLName = Fancy2FA.plugin.config.getString("SQLName")!!
+                SQLUsername = Fancy2FA.plugin.config.getString("SQLUsername")!!
+                SQLPassword = Fancy2FA.plugin.config.getString("SQLPassword")!!
 
-                discordClientID = Fancy2FA.instance?.config?.getString("DiscordClientID")!!
-                discordClientSecret = Fancy2FA.instance?.config?.getString("DiscordClientSecret")!!
-                discordWebserverPort = Fancy2FA.instance?.config?.getInt("DiscordWebserverPort")!!
+                discordClientID = Fancy2FA.plugin.config.getString("DiscordClientID")!!
+                discordClientSecret = Fancy2FA.plugin.config.getString("DiscordClientSecret")!!
+                discordWebserverPort = Fancy2FA.plugin.config.getInt("DiscordWebserverPort")!!
 
         }
 
         private fun loadSecurityQuestions() {
-                val file = File(Fancy2FA.instance?.dataFolder, "security_questions.txt")
+                val file = File(Fancy2FA.plugin.dataFolder, "security_questions.txt")
                 file.forEachLine { line ->
                         securityQuestions.add(line)
                 }

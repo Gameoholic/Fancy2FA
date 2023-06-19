@@ -9,7 +9,7 @@ object ChatMessageListener : Listener {
 
         @EventHandler
         fun onPlayerChatMessage(e: AsyncChatEvent) {
-                if (Fancy2FA.instance?.unverifiedPlayers?.contains(e.player.uniqueId)!!)
+                if (Fancy2FA.unverifiedPlayers.contains(e.player.uniqueId))
                        e.isCancelled = true
         }
 }

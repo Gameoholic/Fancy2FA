@@ -1,11 +1,9 @@
-package com.github.gameoholic.fancy2fa.managers
+package com.github.gameoholic.fancy2fa.utils
 
-import org.bukkit.entity.Player
 import org.mindrot.jbcrypt.BCrypt
-import java.security.SecureRandom
 import java.util.*
 
-object CredentialsManager {
+object CredentialsUtil {
 
         //Used to create credential
         fun genSalt(logRounds: Int): String {

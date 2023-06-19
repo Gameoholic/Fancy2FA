@@ -14,14 +14,14 @@ object InventoryClickListener : Listener {
         fun onInventoryClick(e: InventoryClickEvent) {
                 val player = e.whoClicked as Player
 
-                if (Fancy2FA.instance?.unverifiedPlayers?.contains(player.uniqueId)!!)
+                if (Fancy2FA.unverifiedPlayers.contains(player.uniqueId))
                         e.isCancelled = true
 
-                if (!Fancy2FA.instance?.playerState?.containsKey(player.uniqueId)!!) return
+                if (!Fancy2FA.playerStates.containsKey(player.uniqueId)) return
 
                 val itemStack = e.currentItem ?: return
 
-                MenuManager.handleMenuItemClick(player, itemStack, Fancy2FA.instance?.playerState?.get(player.uniqueId)?.type!!, e.slot)
+                MenuManager.handleMenuItemClick(player, itemStack, Fancy2FA.playerStates[player.uniqueId]!!.type, e.slot)
 
                 e.isCancelled = true
         }

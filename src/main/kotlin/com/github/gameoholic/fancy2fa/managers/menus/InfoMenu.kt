@@ -1,8 +1,6 @@
 package com.github.gameoholic.fancy2fa.managers.menus
 
-import com.github.gameoholic.fancy2fa.datatypes.DiscordAuthData
 import com.github.gameoholic.fancy2fa.managers.ConfigManager
-import com.github.gameoholic.fancy2fa.managers.DBManager
 import com.github.gameoholic.fancy2fa.managers.MenuManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -12,8 +10,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import kotlin.math.floor
-import kotlin.math.max
 
 object InfoMenu {
 

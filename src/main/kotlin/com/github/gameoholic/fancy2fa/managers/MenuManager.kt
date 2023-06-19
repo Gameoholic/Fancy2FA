@@ -3,6 +3,7 @@ package com.github.gameoholic.fancy2fa.managers
 import com.github.gameoholic.fancy2fa.Fancy2FA
 import com.github.gameoholic.fancy2fa.datatypes.*
 import com.github.gameoholic.fancy2fa.managers.menus.*
+import com.github.gameoholic.fancy2fa.utils.DBUtil
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
@@ -36,18 +37,19 @@ object MenuManager {
                                 when (itemName) {
                                         "Create your own security question" -> PromptManager.promptCreateCustomQuestion(player)
                                         "Next page" -> {
-                                                val questionPage = Fancy2FA.instance?.playerState?.get(player.uniqueId)?.data!! as Int
+                                                val questionPage = Fancy2FA.playerStates[player.uniqueId]?.data!! as Int
                                                 displayCreateQuestionMenu(player, questionPage + 1)
                                         }
                                         "Previous page" -> {
-                                                val questionPage = Fancy2FA.instance?.playerState?.get(player.uniqueId)?.data!! as Int
+                                                val questionPage = Fancy2FA.playerStates[player.uniqueId]?.data!! as Int
                                                 displayCreateQuestionMenu(player, questionPage - 1)
                                         }
                                         "Go back" -> {
                                                 displayMainMenu(player)
                                         }
                                         else -> {
-                                                val doesSecurityQuestionExist: Boolean = (DBManager.runDBOperation(DBManager.doesSecurityQuestionExist(itemName, player.uniqueId), player) ?: return).result
+                                                val doesSecurityQuestionExist: Boolean = (DBUtil.runDBOperation(
+                                                        DBUtil.doesSecurityQuestionExist(itemName, player.uniqueId), player) ?: return).result
                                                 if (doesSecurityQuestionExist) {
                                                         displayErrorMenu(player, "You've already created this security question, please pick another one.")
                                                         return
@@ -58,10 +60,10 @@ object MenuManager {
                         }
 
                         PlayerStateType.QUESTION_DETAILS_MENU -> {
-                                val question = Fancy2FA.instance?.playerState?.get(player.uniqueId)?.data!!.toString()
+                                val question = Fancy2FA.playerStates[player.uniqueId]?.data!!.toString()
                                 when (itemName) {
                                         "Remove question" -> {
-                                                DBManager.removeSecurityQuestion(question, player.uniqueId)
+                                                DBUtil.removeSecurityQuestion(question, player.uniqueId)
                                                 displayMainMenu(player)
                                         }
                                         "Update answer" -> {
@@ -75,13 +77,13 @@ object MenuManager {
 
                         PlayerStateType.ERROR_MENU ->  {
                                 //If needs to return back to verification menu:
-                                if (Fancy2FA.instance?.unverifiedPlayers!!.contains(player.uniqueId)) {
+                                if (Fancy2FA.unverifiedPlayers.contains(player.uniqueId)) {
                                         val securityQuestions: MutableList<SecurityQuestion> =
-                                                (DBManager.runDBOperation(DBManager.getPlayerSecurityQuestions(player.uniqueId)) ?: return).result
+                                                (DBUtil.runDBOperation(DBUtil.getPlayerSecurityQuestions(player.uniqueId)) ?: return).result
                                         val authData: PlayerPasswordData? =
-                                                (DBManager.runDBOperation(DBManager.getPlayerPasswordData(player.uniqueId)) ?: return).result
+                                                (DBUtil.runDBOperation(DBUtil.getPlayerPasswordData(player.uniqueId)) ?: return).result
                                         val discordAuthData: DiscordAuthData? =
-                                                (DBManager.runDBOperation(DBManager.getPlayerDiscordAuthData(player.uniqueId)) ?: return).result
+                                                (DBUtil.runDBOperation(DBUtil.getPlayerDiscordAuthData(player.uniqueId)) ?: return).result
                                         val fullAuthData = Player2FALoginData(0, securityQuestions, authData, discordAuthData)
                                         displayVerificationMenu(player, fullAuthData)
                                 }
@@ -94,7 +96,7 @@ object MenuManager {
                                         "Go back" -> displayMainMenu(player)
                                         "Click to set a password." -> PromptManager.promptCreatePassword(player)
                                         "Remove password" -> {
-                                                DBManager.removePassword(player.uniqueId)
+                                                DBUtil.removePassword(player.uniqueId)
                                                 displayMainMenu(player)
                                         }
                                         "Update password" -> {
@@ -107,7 +109,7 @@ object MenuManager {
                                 when (itemName) {
                                         "Go back" -> displayMainMenu(player)
                                         "Remove account" -> {
-                                                DBManager.removeDiscordAuth(player.uniqueId)
+                                                DBUtil.removeDiscordAuth(player.uniqueId)
                                                 displayMainMenu(player)
                                         }
                                         "Update account" -> {
@@ -138,20 +140,20 @@ object MenuManager {
 
         fun displayInfoMenu(player: Player) {
                 val inv = InfoMenu.display(player)
-                Fancy2FA.instance?.playerState?.put(player.uniqueId, PlayerState(PlayerStateType.INFO_MENU, menuInventory = inv))
+                Fancy2FA.playerStates[player.uniqueId] = PlayerState(PlayerStateType.INFO_MENU, menuInventory = inv)
         }
         fun displayMainMenu(player: Player) {
                 val inv = MainMenu.display(player)
-                Fancy2FA.instance?.playerState?.put(player.uniqueId, PlayerState(PlayerStateType.MAIN_MENU, menuInventory = inv))
+                Fancy2FA.playerStates[player.uniqueId] = PlayerState(PlayerStateType.MAIN_MENU, menuInventory = inv)
         }
         fun displayVerificationMenu(player: Player, fullAuthData: Player2FALoginData) {
                 val inv = VerificationMenu.display(player, fullAuthData)
 
-                Fancy2FA.instance?.playerState?.put(player.uniqueId, PlayerState(PlayerStateType.AUTH_LOGIN_MENU, fullAuthData, inv))
+                Fancy2FA.playerStates[player.uniqueId] = PlayerState(PlayerStateType.AUTH_LOGIN_MENU, fullAuthData, inv)
         }
         fun displayErrorMenu(player: Player, errorMessage: String) {
                 val inv = ErrorMenu.display(player, errorMessage)
-                Fancy2FA.instance?.playerState?.put(player.uniqueId, PlayerState(PlayerStateType.ERROR_MENU, menuInventory = inv))
+                Fancy2FA.playerStates[player.uniqueId] = PlayerState(PlayerStateType.ERROR_MENU, menuInventory = inv)
         }
         private fun displayDiscordMenu(player: Player) {
                 //player state is updated in DiscordMenu as needed
@@ -159,15 +161,17 @@ object MenuManager {
         }
         private fun displayPasswordMenu(player: Player) {
                 val inv = PasswordMenu.display(player)
-                Fancy2FA.instance?.playerState?.put(player.uniqueId, PlayerState(PlayerStateType.PASSWORD_MENU, menuInventory = inv))
+                Fancy2FA.playerStates[player.uniqueId] = PlayerState(PlayerStateType.PASSWORD_MENU, menuInventory = inv)
         }
         private fun displayCreateQuestionMenu(player: Player, page: Int = 0) {
                 val inv = CreateQuestionMenu.display(player, page)
-                Fancy2FA.instance?.playerState?.put(player.uniqueId, PlayerState(PlayerStateType.CREATE_QUESTION_MENU, page, inv)) //page
+                Fancy2FA.playerStates[player.uniqueId] =
+                        PlayerState(PlayerStateType.CREATE_QUESTION_MENU, page, inv) //page
         }
         private fun displayQuestionDetailsMenu(player: Player, itemStack: ItemStack, itemName: Component, question: String) {
                 val inv = QuestionDetailsMenu.display(player, itemStack, itemName, question)
-                Fancy2FA.instance?.playerState?.put(player.uniqueId, PlayerState(PlayerStateType.QUESTION_DETAILS_MENU, question, inv))
+                Fancy2FA.playerStates[player.uniqueId] =
+                        PlayerState(PlayerStateType.QUESTION_DETAILS_MENU, question, inv)
         }
 
         fun createItem(item: ItemStack, name: Component, vararg lore: Component): ItemStack {

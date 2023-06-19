@@ -22,7 +22,7 @@ fun main() {
                                         val code: String? = params["code"]
                                         val state: String? = params["state"]
                                         if (code != null && state != null) {
-                                                val playerUUID = Fancy2FA.instance?.discordAuthStates?.get(state)
+                                                val playerUUID = Fancy2FA.discordAuthStates[state]
                                                 if (playerUUID == null)
                                                         call.respond(
                                                                 HttpStatusCode.BadRequest,

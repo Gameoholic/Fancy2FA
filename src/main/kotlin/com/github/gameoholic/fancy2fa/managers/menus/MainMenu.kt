@@ -3,7 +3,7 @@ package com.github.gameoholic.fancy2fa.managers.menus
 import com.github.gameoholic.fancy2fa.datatypes.DiscordAuthData
 import com.github.gameoholic.fancy2fa.datatypes.SecurityQuestion
 import com.github.gameoholic.fancy2fa.managers.ConfigManager
-import com.github.gameoholic.fancy2fa.managers.DBManager
+import com.github.gameoholic.fancy2fa.utils.DBUtil
 import com.github.gameoholic.fancy2fa.managers.MenuManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -46,12 +46,12 @@ object MainMenu {
                 val questionsRequired = ConfigManager.questionsRequired
 
 
-                val hasPassword: Boolean = (DBManager.runDBOperation(DBManager.hasPassword(player.uniqueId), player) ?: return null).result
-                val questions: MutableList<SecurityQuestion> = (DBManager.runDBOperation(
-                        DBManager.getPlayerSecurityQuestions(player.uniqueId), player) ?: return null).result
+                val hasPassword: Boolean = (DBUtil.runDBOperation(DBUtil.hasPassword(player.uniqueId), player) ?: return null).result
+                val questions: MutableList<SecurityQuestion> = (DBUtil.runDBOperation(
+                        DBUtil.getPlayerSecurityQuestions(player.uniqueId), player) ?: return null).result
 
-                val discordAuthData: DiscordAuthData? = (DBManager.runDBOperation(
-                        DBManager.getPlayerDiscordAuthData(player.uniqueId), player) ?: return null).result
+                val discordAuthData: DiscordAuthData? = (DBUtil.runDBOperation(
+                        DBUtil.getPlayerDiscordAuthData(player.uniqueId), player) ?: return null).result
 
                 val questionMinIndex = (13 - floor(max(questions.size, questionsRequired) / 2.0)).toInt()
 
