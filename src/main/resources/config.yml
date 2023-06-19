@@ -30,10 +30,7 @@ AuthenticationIPCooldown: 30
 
 
 #----------------DISCORD AUTH----------------
-#Whether to allow discord authentication. If set to true, uncomment (remove the #) from the following lines.
-UseDiscordAuth: true
 #Whether to require forced users to authenticate themselves on Discord
-ForceDiscord: true
 DiscordClientID: CLIENT_ID
 DiscordClientSecret: CLIENT_SECRET
 DiscordWebserverPort: WEBSERVER_PORT
